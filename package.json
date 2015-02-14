@@ -1,0 +1,19 @@
+{
+  "name": "loginus",
+  "version": "1.0.0",
+  "description": "a basic login demo",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha test"
+  },
+  "keywords": [
+    "login",
+    "passportjs"
+  ],
+  "author": "Peter de Croos",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.11.2",
+    "request": "^2.53.0"
+  }
+}

@@ -1,11 +1,15 @@
 var passport = require('passport');
 var LocalStrategy = require('passport-local');
+var FacebookStrategy = require('passport-facebook');
+
+
 var mongoose = require('../../../deps/mongoose');
 var jwt = require('jsonwebtoken');
 var User = require('../models/user')(mongoose);
 var tokenSecret = process.env.TOKEN_SECRET;
 var _ = require('lodash');
 
+//local strategy, returns a jwt
 passport.use(new LocalStrategy({
   usernameField: 'email'
   }, function(email, password, done) {
@@ -23,6 +27,22 @@ passport.use(new LocalStrategy({
   })
   .catch(done);
 }));
+
+//set up facebook strategy
+/*
+passport.use(new FacebookStrategy({
+    clientID: FACEBOOK_APP_ID,
+    clientSecret: FACEBOOK_APP_SECRET,
+    callbackURL: "http://localhost:3000/auth/facebook/callback",
+    enableProof: false
+  },
+  function(accessToken, refreshToken, profile, done) {
+    User.findOrCreate({ facebookId: profile.id }, function (err, user) {
+      return done(err, user);
+    });
+  }
+));
+*/
 
 module.exports.signupLocal = function(req, res, next) {
   if (req.body.email && req.body.password) {
@@ -46,6 +66,8 @@ module.exports.signupLocal = function(req, res, next) {
     next(new Error('email and or password not provided'));
   }
 };
+
+
 
 
 module.exports.authenticateLocal = function(req, res, next) {

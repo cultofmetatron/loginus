@@ -18,6 +18,9 @@ module.exports = function(mongoose) {
       type: String,
       unique: true,
     },
+    auth_data: {
+      type: Object
+    },
     login_type: String,
     password_crypted: String,
     password_salt: String,

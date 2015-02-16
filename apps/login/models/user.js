@@ -64,6 +64,26 @@ module.exports = function(mongoose) {
           throw err;
         }
       })
+  });
+
+  UserSchema.static('passwordMatch', function(opt) {
+    var email = opt.email;
+    var password = opt.password;
+    return Promise
+      .try((function() {
+        return this.find({
+          email: email
+        }).exec();
+      }).bind(this))
+      .then(function(users) {
+        var user = users[0];
+        console.log('gets here', user)
+        return bcrypt.hashAsync(password, user.password_salt)
+          .then(function(hash) {
+            console.log('but not here?')
+            return hash === user.password_crypted;
+          })
+      })
   
   })
 

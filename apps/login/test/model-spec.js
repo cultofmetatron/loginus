@@ -30,6 +30,20 @@ describe('User', function() {
         done()
       
       });
+  });
+
+  it('should return true for a matching password, email pair', function(done) {
+    var user = {
+      email: 'foobar@foobar.com',
+      password: 'hushpuppy',
+    };
+    User.passwordMatch(user)
+      .then(function(matches) {
+        matches.should.equal(true);
+        done();
+      })
+      .catch(done)
+  
   })
 
   after(function(done) {

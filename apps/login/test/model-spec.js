@@ -38,11 +38,25 @@ describe('User', function() {
     };
     User.passwordMatch(user)
       .then(function(matches) {
-        matches.should.equal(true);
+        matches.should.not.equal(false);
         done();
       })
       .catch(done)
   });
+
+  it('should return false for a matching password, email pair', function(done) {
+    var user = {
+      email: 'foobar@foobar2.com',
+      password: 'hushpuppy',
+    };
+    User.passwordMatch(user)
+      .then(function(matches) {
+        matches.should.equal(false);
+        done();
+      })
+      .catch(done)
+  });
+
 
   after(function(done) {
     //delete the user

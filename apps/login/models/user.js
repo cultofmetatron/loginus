@@ -36,7 +36,7 @@ module.exports = function(mongoose) {
   });
 
 
-
+  //create a user with the options, returns a promise
    UserSchema.static('createUser', function(opt) {
     console.log('der user ', opt)
     var params = _.omit(opt, 'password' , 'password_crypted', 'password_salt');
@@ -53,11 +53,9 @@ module.exports = function(mongoose) {
           password_crypted: password_crypted,
           password_salt: password_salt
         });
-        console.log('fabulous', newUser )
         return this.create(newUser);
       })
       .catch(function(err) {
-        console.log(err.message)
         if (err.message.match('E11000')) {
           throw new Error('duplicate email')
         } else {
@@ -76,16 +74,19 @@ module.exports = function(mongoose) {
         }).exec();
       }).bind(this))
       .then(function(users) {
+        if (users.length === 0) {
+          return false;
+        }
         var user = users[0];
-        console.log('gets here', user)
         return bcrypt.hashAsync(password, user.password_salt)
           .then(function(hash) {
-            console.log('but not here?')
-            return hash === user.password_crypted;
-          })
+            return (hash === user.password_crypted) ?
+              _.omit(user, 'password_crypted', 'password_salt') : false
+          });
       })
+      
   
-  })
+  });
 
 
   return mongoose.model('User', UserSchema);

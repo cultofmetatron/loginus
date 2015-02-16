@@ -20,7 +20,19 @@ module.exports = function(mongoose) {
     },
     login_type: String,
     password_crypted: String,
-    password_salt: String
+    password_salt: String,
+    confirmed: {
+      type: Boolean,
+      default: false
+    },
+    created_at: {
+      type: Date,
+      default: function() { return new Date(); }
+    },
+    last_login: {
+      type: Date,
+      default: function() { return new Date(); }
+    }
   });
 
 

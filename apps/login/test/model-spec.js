@@ -27,8 +27,7 @@ describe('User', function() {
     User.createUser(user)
       .catch(function(err) {
         err.message.should.equal('duplicate email');
-        done()
-      
+        done();
       });
   });
 
@@ -43,8 +42,7 @@ describe('User', function() {
         done();
       })
       .catch(done)
-  
-  })
+  });
 
   after(function(done) {
     //delete the user
@@ -52,7 +50,7 @@ describe('User', function() {
       .then(function() {
         done();
       }, done);
-  })
+  });
 
 
 });

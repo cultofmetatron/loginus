@@ -1,4 +1,35 @@
 extends layout
 block content
-  h1 #login page
+  .col-md-6
+    div(ng-controller="TabsAccounts")
+      tabset
+        tab(heading="Login")
+          br
+          form#login(ng-submit="loginHandler()", autocomplete="off")
+            .form-group
+              label.control-label Email
+              input(type="text", ng-model="login.email", name="email",  class="form-control")
+              label.control-label Email
+              input(type="text", ng-model="login.email", name="email" class="form-control")
+            .form-group
+              label.control-label Password
+              input(type="password", ng-model="loginPassword", name="password" , class="form-control")
+            .form-group
+              input.btn.btn-default(type="submit")
+        tab(heading="Signup/Register")
+          br
+          form#signup(ng-submit="signupHandler()", autocomplete="off")
+            .form-group
+              label.control-label Email
+              input(type="email", ng-model="signup.email"  , name="email" class="form-control")
+            .form-group
+              label.control-label Password
+              input(type="password", ng-model="signupPassword" , name="password" class="form-control")
+            .form-group
+              label.control-label Password Confirmation
+              input(type="password", ng-model="signup.passwordConfirm", name="password-confirm" class="form-control")
+            .form-group
+              input.btn.btn-default(type="submit")
+
+  .col-md-5.col-md-offset-1 oauth buttons
 

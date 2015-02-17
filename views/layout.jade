@@ -1,14 +1,21 @@
 doctype html
-html(lang="en")
+html(lang="en" ng-app="app")
   head
     title= pageTitle
     link(rel="stylesheet", href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css")
   body
     noscript This page requires javascript to run properly
-    .header= headline
-    block content
-    script(type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/angular.js/1.3.13/angular.min.js")
-    script(type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/angular-ui-bootstrap/0.12.0/ui-bootstrap-tpls.min.js")
+    .container
+      .row
+        .col-md-12
+          .page-header
+            h1 A Sample Login Page!!
+            h2
+              small experience the thrill of logging in with twitter, facebook or basic experience!!
+      .row
+        block content
+    script(type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/angular.js/1.3.13/angular.js")
+    script(type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/angular-ui-bootstrap/0.12.0/ui-bootstrap-tpls.js")
     script(type="text/javascript" src="/static/js/main.js")
 
 

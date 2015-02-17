@@ -5,31 +5,34 @@ block content
       tabset
         tab(heading="Login")
           br
-          form#login(ng-submit="loginHandler()", autocomplete="off")
+          form#login(ng-submit="loginHandler(login)", autocomplete="off")
             .form-group
               label.control-label Email
               input(type="text", ng-model="login.email", name="email",  class="form-control")
-              label.control-label Email
-              input(type="text", ng-model="login.email", name="email" class="form-control")
             .form-group
               label.control-label Password
-              input(type="password", ng-model="loginPassword", name="password" , class="form-control")
+              input(type="password", ng-model="login.password", name="password" , class="form-control")
             .form-group
               input.btn.btn-default(type="submit")
         tab(heading="Signup/Register")
           br
-          form#signup(ng-submit="signupHandler()", autocomplete="off")
+          form#signup(ng-submit="signupHandler(signup)", autocomplete="off")
             .form-group
               label.control-label Email
               input(type="email", ng-model="signup.email"  , name="email" class="form-control")
             .form-group
               label.control-label Password
-              input(type="password", ng-model="signupPassword" , name="password" class="form-control")
+              input(type="password", ng-model="signup.password" , name="password" class="form-control")
             .form-group
               label.control-label Password Confirmation
               input(type="password", ng-model="signup.passwordConfirm", name="password-confirm" class="form-control")
             .form-group
               input.btn.btn-default(type="submit")
-
-  .col-md-5.col-md-offset-1 oauth buttons
+  div.col-md-5.col-md-offset-1(ng-controller="oauthAccount")
+    .row
+      .col-md-12
+        button.btn.btn-default(ng-click="twitterLogin()") Twitter Login
+    .row
+      .col-md-12
+        button.btn.btn-default(ng-click="facebookLogin()") Facebook Login
 

@@ -15,7 +15,11 @@ app.get('/', function(req, res, next) {
 app.post('/login', passport.authenticateLocal);
 app.post('/signup', passport.signupLocal);
 
-
+app.use(function(err, req, res, next) {
+  res.status(404).json({
+    message: err.message
+  });
+});
 
 
 module.exports = app;

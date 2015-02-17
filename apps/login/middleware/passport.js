@@ -68,8 +68,6 @@ module.exports.signupLocal = function(req, res, next) {
 };
 
 
-
-
 module.exports.authenticateLocal = function(req, res, next) {
   passport.authenticate('local', function(err, user, info) {
     if (err) { return next(err); }

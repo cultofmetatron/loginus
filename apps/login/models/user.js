@@ -90,10 +90,7 @@ module.exports = function(mongoose) {
       
   
   });
-
-
   return mongoose.model('User', UserSchema);
-
 };
 
 

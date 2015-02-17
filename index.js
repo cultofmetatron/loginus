@@ -9,6 +9,7 @@ var loginApp = require('./apps/login');
 
 app.use('/', loginApp);
 
+app.use('/static', express.static('./frontend'));
 
 var port = process.env.PORT || 3000;
 console.log('now listening on port: ', port);

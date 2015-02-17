@@ -49,9 +49,19 @@ angular.module('app', ['ui.bootstrap'])
       console.log('passowords do not match')
     }
   };
-  
+})
+.controller('OauthAccount', function($scope, $window, $http) {
 
-});
+  $scope.twitterLogin = function() {
+    console.log('twitter logginer')
+  };
+
+  $scope.facebookLogin = function() {
+    console.log('faceebooko');
+  }
+
+
+})
 
 
 

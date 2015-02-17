@@ -29,8 +29,6 @@ angular.module('app', ['ui.bootstrap', 'facebook'])
 
   };
 
-
-  
   $scope.loginHandler = function(login) {
     console.log('login', login);
     $scope.postLogin({
@@ -39,8 +37,6 @@ angular.module('app', ['ui.bootstrap', 'facebook'])
     })
   };
 
-  
-  
   $scope.signupHandler = function(signup) {
     console.log('signup', signup);
     if (signup.password === signup.passwordConfirm) {
@@ -61,14 +57,8 @@ angular.module('app', ['ui.bootstrap', 'facebook'])
 .controller('OauthAccount', function($scope, $window, $http, Facebook) {
 
   $scope.twitterLogin = function() {
-    var w = $window.open('//www.yahoo.com','windowname','width=600,height=250,scrollbars,resizable,toolbar,status');
-    $(w).on('furor', function(ev) {
-      console.log(ev);
-    })
-    setTimeout(function() {
-      $(w).trigger('furor', "hello")
-    })
-  
+    var w = $window.open('/auth/twitter','windowname','width=600,height=250,scrollbars,resizable,toolbar,status');
+    
   };
 
   $scope.facebookLogin = function() {

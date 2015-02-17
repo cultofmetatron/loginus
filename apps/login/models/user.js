@@ -32,6 +32,9 @@ module.exports = function(mongoose) {
       type: Boolean,
       default: false
     },
+    twitter_token: String,
+    twitter_tokenSecret: String,
+    twitter_profile: Object,
     basic_login: {
       type: Boolean,
       default: false

@@ -17,6 +17,9 @@ app.post('/signup', passport.signupLocal);
 
 app.get('/auth/facebook', passport.fbAuthenticate);
 app.get('/auth/facebook/callback', passport.facebookCallback);
+app.get('/auth/twitter', passport.authenticateTwitter);
+app.get('/auth/twitter/callback', passport.twitterCallback);
+
 
 app.get('/auth/reflect/:jwt', function(req, res, next) {
   res.render('reflector', {

@@ -1,7 +1,7 @@
 var passport = require('passport');
 var LocalStrategy = require('passport-local');
 var FacebookStrategy = require('passport-facebook');
-var fbapi = require('facebook-api');
+var TwitterStrategy = require('passport-twitter').Strategy;
 
 var mongoose = require('../../../deps/mongoose');
 var jwt = require('jsonwebtoken');
@@ -51,11 +51,9 @@ passport.use(new FacebookStrategy({
     };
     User.findOrCreateFBUser(user)
       .then(function(user) {
-        console.log('##user ', user)
         done(null, user);
       })
       .catch(function(err) {
-        console.log('##err', err)
         done(err);
       })
     }
@@ -75,6 +73,35 @@ var retrieveFBProfile = function(accessToken) {
       }
     })
   });
+};
+
+//twitter strategy
+//http://127.0.0.1:5000/auth/twitter/callback
+passport.use(new TwitterStrategy({
+    consumerKey: process.env.TWITTER_CONSUMER_KEY,
+    consumerSecret: process.env.TWITTER_CONSUMER_SECRET,
+    callbackURL: "http://127.0.0.1:"+ process.env.PORT + "/auth/twitter/callback"
+  },
+  function(token, tokenSecret, profile, done) {
+    
+
+    console.log('der profile in twitter strategy ', profile)
+
+    done(null, false, {message: 'just foolin bros'})
+  }
+));
+
+module.exports.authenticateTwitter = function(req, res, next) {
+  passport.authenticate('twitter')(req, res, next);
+};
+
+module.exports.twitterCallback = function(req, res, next) {
+  passport.authenticate('twitter', function(err, profile) {
+    console.log('der profile: ', arguments);
+    res.render('twitter-login', {
+      jwt: 'yolo'
+    })
+  })(req, res, next);
 };
 
 

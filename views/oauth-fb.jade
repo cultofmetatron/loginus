@@ -1,0 +1,15 @@
+doctype html
+html(lang="en" ng-app="app")
+  head
+    title= pageTitle
+    link(rel="stylesheet", href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css")
+  body
+    span#token(style="display:none")= jwt_token
+    script(type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.js")
+    script(type='text/javascript').
+      var token = $('span#token').text();
+      console.log(token)
+      document.cookie = "jwt="+ token + ";path=/"
+      window.close();
+    
+

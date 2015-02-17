@@ -14,14 +14,28 @@ module.exports = function(mongoose) {
       type: String,
       unique: true
     },
+    fb_id: String,
+    fb_data: Object,
     email: {
       type: String,
       unique: true,
     },
-    auth_data: {
+    fb_auth_data: {
       type: Object
     },
     login_type: String,
+    fb_login: {
+      type: Boolean,
+      default: false
+    },
+    twitter_login: {
+      type: Boolean,
+      default: false
+    },
+    basic_login: {
+      type: Boolean,
+      default: false
+    },
     password_crypted: String,
     password_salt: String,
     confirmed: {
@@ -87,9 +101,28 @@ module.exports = function(mongoose) {
               _.omit(user, 'password_crypted', 'password_salt') : false
           });
       })
-      
-  
   });
+
+  UserSchema.static('findOrCreateFBUser', function(opt) {
+    return Promise.try((function() {
+      return this.find({
+        fb_id: opt.fb_id,
+      }).exec();
+    }).bind(this))
+    .bind(this)
+    .then(function(users) {
+      if (users.length === 0) {
+        return this.create(opt)
+      } else {
+        return users[0];
+      }
+    })
+  });
+
+  UserSchema.static('findOrCreateFacebookUser', function(options) {
+  
+  })
+
   return mongoose.model('User', UserSchema);
 };
 

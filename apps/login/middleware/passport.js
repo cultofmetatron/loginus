@@ -1,13 +1,16 @@
 var passport = require('passport');
 var LocalStrategy = require('passport-local');
 var FacebookStrategy = require('passport-facebook');
-
+var fbapi = require('facebook-api');
 
 var mongoose = require('../../../deps/mongoose');
 var jwt = require('jsonwebtoken');
 var User = require('../models/user')(mongoose);
 var tokenSecret = process.env.TOKEN_SECRET;
 var _ = require('lodash');
+
+var Facebook = require('facebook-node-sdk');
+
 
 //local strategy, returns a jwt
 passport.use(new LocalStrategy({
@@ -29,20 +32,51 @@ passport.use(new LocalStrategy({
 }));
 
 //set up facebook strategy
-/*
 passport.use(new FacebookStrategy({
-    clientID: FACEBOOK_APP_ID,
-    clientSecret: FACEBOOK_APP_SECRET,
-    callbackURL: "http://localhost:3000/auth/facebook/callback",
+    clientID: process.env.FB_APPID,
+    clientSecret: process.env.FB_SECRET,
+    callbackURL: "http://localhost:"+ process.env.PORT + "/auth/facebook/callback",
     enableProof: false
   },
   function(accessToken, refreshToken, profile, done) {
-    User.findOrCreate({ facebookId: profile.id }, function (err, user) {
-      return done(err, user);
-    });
-  }
+    console.log(profile);
+    var user = {
+      login_type: 'facebook',
+      fb_id: profile.id,
+      fb_data: {
+        accessToken: accessToken,
+        refreshToken: refreshToken
+      },
+      fb_auth_data: profile
+    };
+    User.findOrCreateFBUser(user)
+      .then(function(user) {
+        console.log('##user ', user)
+        done(null, user);
+      })
+      .catch(function(err) {
+        console.log('##err', err)
+        done(err);
+      })
+    }
 ));
-*/
+
+var retrieveFBProfile = function(accessToken) {
+  var facebook = new Facebook({
+    appID: process.env.FB_APPID,
+    secret: process.env.FB_SECRET
+  });
+  facebook.setAccessToken(accessToken);
+  return new Promise(function(resolve, reject) {
+    facebook.api('/me', function(err, data) {
+      if (err) { reject(err); }
+      else {
+        resolve(data);
+      }
+    })
+  });
+};
+
 
 module.exports.signupLocal = function(req, res, next) {
   if (req.body.email && req.body.password) {
@@ -50,8 +84,6 @@ module.exports.signupLocal = function(req, res, next) {
     .then(function(user) {
       console.log('a user', user, jwt)
       var token = jwt.sign({
-        'email': user.email,
-        'type': user.type,
         _id: user._id
       }, tokenSecret);
 
@@ -62,11 +94,44 @@ module.exports.signupLocal = function(req, res, next) {
 
     })
     .catch(next);
+  } if ((req.body.type === 'fb' && req.body.accessToken && req.body.userID)) {
+    console.log('facebook login!')
+    retrieveFBProfile(req.body.accessToken)
+      .then(function(data) {
+        console.log('der data', data);
+        res.send({
+          message: profile,
+          data: data
+        })
+      })
+      .catch(err);
+  
   } else {
     next(new Error('email and or password not provided'));
   }
 };
 
+
+module.exports.fbAuthenticate = function(req, res, next) {
+  console.log('hitting this endpoint!!')
+  passport.authenticate('facebook')(req, res, next);
+};
+
+module.exports.facebookCallback = function(req, res, next) {
+  passport.authenticate('facebook', { failureRedirect: '/' } , function(err, user) {
+    //does not get called
+    if (err) { return res.status(400).send({message: err})}
+    var token = jwt.sign({
+      _id: user._id
+    }, tokenSecret);
+    res.render('oauth-fb', {
+      jwt_token: token
+    })
+
+    
+  })(req, res, next)
+
+};
 
 module.exports.authenticateLocal = function(req, res, next) {
   passport.authenticate('local', function(err, user, info) {
@@ -74,8 +139,6 @@ module.exports.authenticateLocal = function(req, res, next) {
     if (!user) { return next(new Error('unauthorized')); }
 
     var token = jwt.sign({
-      'email': user.email,
-      'type': user.type,
       _id: user._id
     }, tokenSecret);
 
@@ -85,3 +148,10 @@ module.exports.authenticateLocal = function(req, res, next) {
     });
   })(req, res, next);
 };
+
+
+
+
+
+
+

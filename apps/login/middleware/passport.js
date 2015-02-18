@@ -211,16 +211,7 @@ passport.serializeUser(function(user, done) {
 });
 
 passport.deserializeUser(function(id, done) {
-  /*
-  User.find({
-    _id: id
-  }).exec()
-  .then(function(user) {
-    done(null, user)
-  }, function(err) {
-    done(err);
-  });
-  */
+  //here only because of twitter
 });
 
 module.exports.setSessions = function(app) {

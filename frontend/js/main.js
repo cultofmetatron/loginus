@@ -20,8 +20,8 @@ angular.module('app',[
 })
 .factory('Auth', function($cookies, $cookieStore, $http) {
   return {
-    signup: function() {
-      return $http.post('/signup', data)
+    signup: function(user) {
+      return $http.post('/signup', user)
       .success(function(data) {
         $cookieStore.put('jwt', data.token)
         return data;
@@ -31,11 +31,9 @@ angular.module('app',[
         throw err;
       });
     },
-    login: function() {
-      console.log('data', data)
-      return $http.post('/login', data)
+    login: function(user) {
+      return $http.post('/login', user)
         .success(function(data) {
-          //$window.JWT_TOKEN = data.token;
           $cookieStore.put('jwt', data.token);
           return data
         })

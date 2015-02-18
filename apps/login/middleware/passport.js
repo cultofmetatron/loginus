@@ -83,10 +83,7 @@ passport.use(new TwitterStrategy({
     callbackURL: "http://127.0.0.1:"+ process.env.PORT + "/auth/twitter/callback"
   },
   function(token, tokenSecret, profile, done) {
-    
-
     console.log('der profile in twitter strategy ', profile)
-
     done(null, false, {message: 'just foolin bros'})
   }
 ));
@@ -122,7 +119,6 @@ module.exports.signupLocal = function(req, res, next) {
           message: 'successfully logged in',
           token: token
         });
-
       })
     })
     .catch(next);
@@ -146,11 +142,8 @@ module.exports.facebookCallback = function(req, res, next) {
     }, tokenSecret);
     res.render('oauth-fb', {
       jwt_token: token
-    })
-
-    
+    });
   })(req, res, next)
-
 };
 
 module.exports.authenticateLocal = function(req, res, next) {

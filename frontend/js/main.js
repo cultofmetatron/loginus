@@ -17,42 +17,26 @@
     return (getCookie('jwt').length > 0) ? getCookie('jwt') : false;
   };
 
-  var checkStatus = setInterval((function(status) {
-    return function() {
-      var jwt = loggedIn();
-      if (jwt && (jwt !== status.loggedIn)) {
-        console.log('loggedIn', jwt, status.loggedIn)
-        status.loggedIn = jwt;
-        $(window).trigger('loggedIn', { data: jwt });
-      } else {
-        //edge cases I haven't thought of; maybe logout?
-        if (!jwt) {
-          status.loggedIn = false;
-          $(window).trigger('loggedOut');
-        } else {
-          
-        }
-      }
-    }
-  })({loggedIn: false}), 500);
-
 }).call(this);
 
-$('window').on('loggedIn', function() {
-  module.run(function($http) {
-    var jwt = loggenIn();
-    $http.defaults.headers.common.Authorization = 'Bearer ' + jwt
-  });
-});
 
 angular.module('app', ['ui.bootstrap', 'facebook'])
-.controller('TabsAccounts', function ($scope, $window, $http) {
+.config(function(FacebookProvider) {
+   // Set your appId through the setAppId method or
+   // use the shortcut in the initialize method directly.
+   FacebookProvider.init('1549928668626444');
+})
+.run(function($http) {
+})
+.controller('TabsAccounts', function ($scope, $window, $http, $interval) {
 
   $scope.isLoggedIn = loggedIn();
 
-  setInterval(function() {
+  $interval(function() {
     $scope.isLoggedIn = loggedIn();
   }, 500);
+
+
 
   $scope.postLogin = function(data) {
     console.log('data', data)
@@ -101,11 +85,6 @@ angular.module('app', ['ui.bootstrap', 'facebook'])
     }
   };
 })
-.config(function(FacebookProvider) {
-   // Set your appId through the setAppId method or
-   // use the shortcut in the initialize method directly.
-   FacebookProvider.init('1549928668626444');
-})
 .controller('OauthAccount', function($scope, $window, $http, Facebook) {
 
   $scope.twitterLogin = function() {
@@ -129,11 +108,7 @@ angular.module('app', ['ui.bootstrap', 'facebook'])
       var jwt = $(fb_win.document).find('#token').text();
       console.log('jwt', jwt);
     });
-
-
-    $window.fbu = fb_win;
-    setTimeout(function() { $(fb_win).trigger('load'); }, 8000)
-
+ 
   };
 
 

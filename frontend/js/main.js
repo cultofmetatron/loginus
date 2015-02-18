@@ -16,30 +16,33 @@ angular.module('app',[
   }];
 
 })
-.run(function($http) {
-})
-.factory('Auth', function($cookies, $cookieStore, $http) {
+.factory('Auth', function($cookies, $cookieStore, $http, $q) {
   return {
     signup: function(user) {
       return $http.post('/signup', user)
-      .success(function(data) {
-        $cookieStore.put('jwt', data.token)
-        return data;
+      .then(function(res) {
+        $cookieStore.put('jwt', res.data.token)
+        return res.data;
       })
-      .error(function(err) {
-        console.log('signup error', err);
-        throw err;
+      .catch(function(res) {
+        console.log('signup error', res.data);
+        return $q.reject(res.data);
       });
+    },
+    logout: function() {
+      $cookieStore.remove('jwt');
+      //ensuring consistentcy with rest of api
+      //despite being synchronous
+      return $q.when(true);
     },
     login: function(user) {
       return $http.post('/login', user)
-        .success(function(data) {
-          $cookieStore.put('jwt', data.token);
-          return data
+        .then(function(res) {
+          $cookieStore.put('jwt', res.data.token);
+          return res.data
         })
-        .error(function(err) {
-          console.log('login error', err)
-          throw err;
+        .catch(function(res) {
+          return $q.reject(res.data);
         });
 
     },
@@ -52,6 +55,8 @@ angular.module('app',[
 
   $scope.isLoggedIn = Auth.isAuthenticated;
 
+  $scope.logout = Auth.logout;
+
   $scope.postLogin = function(user) {
     Auth.login({
       email: user.email,
@@ -63,7 +68,7 @@ angular.module('app',[
     })
     .catch(function(err) { 
       console.log(err);
-      
+      alert(err.message)
     });
   };
 
@@ -78,7 +83,7 @@ angular.module('app',[
     })
     .catch(function(err) {
       console.log(err);
-      
+      alert(err.message)
     });
   };
 
@@ -112,25 +117,34 @@ angular.module('app',[
   $scope.facebookLogin = function() {
     console.log('faceebooko');
     var fb_win = $window.open('/auth/facebook', 'fb_win','width=800,height=350,scrollbars=false,resizable,toolbar,status' );
-    $(fb_win).on('load', function(ev) {
-      console.log('trying to load')
-      var jwt = $(fb_win.document).find('#token').text();
-      console.log('jwt', jwt);
-    });
-    $($window).on('foobar', function(ev) {
-      console.log('ev', ev)
-    })
-    $(fb_win).on('beforeunload', function(ev) {
-      console.log('unloading')
-      var jwt = $(fb_win.document).find('#token').text();
-      console.log('jwt', jwt);
-    });
- 
   };
 
 
 })
-
+.directive('passwordsMatch', function() {
+  return {
+    restrict: "A",
+    require: ['^ngModel', '^form'],
+    link: function(scope, element, attrs, ctrls) {
+      var formCtrl = ctrls[1];
+      var ngModel = ctrls[0];
+      var otherPasswordModel = formCtrl[attrs.passwordsMatch];
+      ngModel.$validators.passwordsMatch = function(password) {
+        return otherPasswordModel.$modelValue === password;
+      };
+    }
+  }
+})
+.directive('emailAvailableValidator', function($http) {
+  return {
+    require : '^ngModel',
+    link : function(scope, element, attrs, ngModel) {
+      ngModel.$asyncValidators.emailAvailable = function(email) {
+        return $http.get('/email-exists?emailname='+ email);
+      };
+    }
+  }
+});
 
 
 

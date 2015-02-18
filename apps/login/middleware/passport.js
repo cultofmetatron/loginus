@@ -89,7 +89,10 @@ passport.use(new TwitterStrategy({
 ));
 
 module.exports.authenticateTwitter = function(req, res, next) {
-  passport.authenticate('twitter')(req, res, next);
+  passport.authenticate('twitter')(req, res, function() {
+    console.log('twitter-auth', arguments);
+    
+  });
 };
 
 module.exports.twitterCallback = function(req, res, next) {

@@ -23,6 +23,9 @@ app.get('/auth/facebook/callback', passport.facebookCallback);
 app.get('/auth/twitter', passport.authenticateTwitter);
 app.get('/auth/twitter/callback', passport.twitterCallback);
 
+app.get('/email-exists', function(req, res, next) {
+  res.status(200).send({})
+})
 
 
 app.use(function(err, req, res, next) {

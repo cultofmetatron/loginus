@@ -36,7 +36,7 @@ passport.use(new LocalStrategy({
   })
   .catch(done);
 }));
-
+//http://loginus.herokuapp.com/auth/facebook/callback
 //set up facebook strategy
 passport.use(new FacebookStrategy({
     clientID: process.env.FB_APPID,

@@ -1,3 +1,7 @@
+var dotenv = require('dotenv');
+dotenv.load();
+
+
 var mocha = require('mocha');
 var should = require('should');
 var _ = require('lodash');
@@ -59,7 +63,8 @@ describe('User', function() {
 
   after(function(done) {
     //delete the user
-    User.find({email: 'foobar@foobar.com'}).remove().exec()
+    User.find({
+      'local.email': 'foobar@foobar.com'}).remove().exec()
       .then(function() {
         done();
       }, done);

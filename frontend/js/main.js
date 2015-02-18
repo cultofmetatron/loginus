@@ -48,6 +48,9 @@ angular.module('app',[
     },
     isAuthenticated: function() {
       return !!$cookies.jwt;
+    },
+    reset: function(email) {
+    
     }
   }
 })
@@ -106,6 +109,18 @@ angular.module('app',[
       console.log('passowords do not match')
     }
   };
+
+  $scope.resetHandler = function(email) {
+    return Auth.reset(email)
+      .then(function() {
+      
+      })
+      .catch(function() {
+      
+      })
+  
+  };
+
 })
 .controller('OauthAccount', function($scope, $window, $http, Facebook) {
 

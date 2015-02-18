@@ -24,7 +24,8 @@ var mongoose = require('../../../deps/mongoose');
         unique: true,
         index: { sparse: true },
         default: function() { return uuid.v4(); }
-      }
+      },
+      reset_code: String
     },
     facebook: {
       id: {
@@ -102,7 +103,28 @@ var mongoose = require('../../../deps/mongoose');
         return this.create(newUser);
       })
       .catch(function(err) {
-        throw err;
+        if (err.message.match('duplicate key error index')) {
+          throw new Error('duplicate email')
+        } else {
+          throw err;
+        }
+      });
+  });
+
+  UserSchema.static('createResetCode', function(opt) {
+    var email = opt.email;
+    return Promise
+      .try((function() {
+        return this.update({
+          "local.email": email
+        }, {
+          "local.reset_code": uuid.v4()
+        }).exec();
+      }).bind(this))
+      .bind(this)
+      .then(function(users) {
+        console.log('users')
+      
       });
   });
 

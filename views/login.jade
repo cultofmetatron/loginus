@@ -30,6 +30,14 @@ block content
               input(type="password", required="", ng-model="signup.passwordConfirm", passwords-match="passwordInputField" name="passwordConfirm" class="form-control")
             .form-group
               input.btn.btn-default(type="submit")
+        tab(heading="Reset Password")
+          br
+          form#reset(ng-submit="resetHandler(reset.email)")
+            .form-group
+              label.control-label What email did you use?
+              input(type="email", email-available-validator="" required="", ng-model="reset.email", ng-model-options="{ updateOn: 'default blur', debounce: {'default': 500, 'blur': 0} }"  , name="email" class="form-control")
+            .form-group
+              input.btn.btn-default(type="submit")
         tab(heading="Social Logins")
           div(ng-controller="OauthAccount")
             .row

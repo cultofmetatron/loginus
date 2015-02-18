@@ -44,20 +44,13 @@ angular.module('app',[
 
     },
     isAuthenticated: function() {
-      //debugger
       return !!$cookies.jwt;
     }
   }
 })
-.controller('TabsAccounts', function ($scope, $window, $http, $interval, Auth) {
+.controller('TabsAccounts', function ($scope, $window, $http, Auth) {
 
-  $scope.isLoggedIn = Auth.isAuthenticated();
-
-  $interval(function() {
-    $scope.isLoggedIn = Auth.isAuthenticated();
-  }, 500);
-
-
+  $scope.isLoggedIn = Auth.isAuthenticated;
 
   $scope.postLogin = function(user) {
     Auth.login({

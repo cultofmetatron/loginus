@@ -1,7 +1,7 @@
 extends layout
 block content
   .col-md-6(ng-controller="TabsAccounts")
-    div( ng-if="!isLoggedIn")
+    div( ng-if="!isLoggedIn()")
       tabset
         tab(heading="Login")
           br
@@ -36,7 +36,7 @@ block content
             .row
               .col-md-12
                 button.btn.btn-default(ng-click="facebookLogin()") Facebook Login
-    div(ng-if="isLoggedIn")
+    div(ng-if="isLoggedIn()")
       h1 you are logged in!!
 
 

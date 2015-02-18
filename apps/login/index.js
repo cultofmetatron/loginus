@@ -24,11 +24,6 @@ app.get('/auth/twitter', passport.authenticateTwitter);
 app.get('/auth/twitter/callback', passport.twitterCallback);
 
 
-app.get('/auth/reflect/:jwt', function(req, res, next) {
-  res.render('reflector', {
-    
-  })
-})
 
 app.use(function(err, req, res, next) {
   res.status(404).json({
@@ -37,5 +32,5 @@ app.use(function(err, req, res, next) {
 });
 
 
-module.exports = app;
+module.exports.app = app;
 

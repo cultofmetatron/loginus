@@ -1,8 +1,7 @@
 var mocha = require('mocha');
 var should = require('should');
 var _ = require('lodash');
-var mongoose = require('../../../deps/mongoose');
-var User = require('../models/user')(mongoose);
+var User = require('../models/user');
 
 describe('User', function() {
  

@@ -24,6 +24,7 @@
     "jade": "^1.9.2",
     "jsonwebtoken": "^3.2.2",
     "lodash": "^3.2.0",
+    "mandrill-api": "^1.0.41",
     "mocha": "^2.1.0",
     "mongoose": "^3.8.23",
     "node-uuid": "^1.4.2",
@@ -34,5 +35,8 @@
     "passport-twitter": "^1.0.2",
     "request": "^2.53.0",
     "should": "^5.0.0"
+  },
+  "devDependencies": {
+    "dotenv": "^0.5.1"
   }
 }

@@ -15,10 +15,10 @@ app.use(session({
 app.use('/static', express.static('./frontend'));
 
 
-var loginApp = require('./apps/login');
+var login = require('./apps/login');
 
 
-app.use(loginApp);
+app.use(login.app);
 
 
 

@@ -87,7 +87,7 @@ passport.use(new TwitterStrategy({
     callbackURL: "http://127.0.0.1:"+ process.env.PORT + "/auth/twitter/callback"
   },
   function(token, tokenSecret, profile, done) {
-    console.log('der profile in twitter strategy ', profile)
+    console.log('der profile in twitter strategy ', token, tokenSecret, profile)
     done(null, false, {message: 'just foolin bros'})
   }
 ));

@@ -18,20 +18,14 @@ module.exports.confirm = function(req, res, next) {
   console.log('token', confirm_token);
   Promise.try(function() {
     return User.update({
-      local: {
-        confirm_token: confirm_token
-      }
+      "local.confirm_token": confirm_token
     }, {
-      local: {
-        confirmed: true
-      }
+      "local.confirmed": true
     }, { multi: true })
     .exec();
   })
   .then(function() {
-    res.render('login', {
-      notice: 'email confirmed'
-    })
+    res.redirect('/')
   })
   .catch(next);
 };
@@ -44,8 +38,8 @@ module.exports.sendConfirmationEmail = function(opt) {
     "from_email": "peter@example.com",
     "from_name": "Loginus",
     "to": [{
-      "email": opt.email,
-      "name": opt.email || "new user",
+      "email": opt.local.email,
+      "name": opt.local.email || "new user",
       "type": "to"
     }]
   }
@@ -70,8 +64,8 @@ module.exports.sendWelcomeEmail = function(opt) {
     "from_email": "peter@example.com",
     "from_name": "Loginus",
     "to": [{
-      "email": opt.email,
-      "name": opt.email || "new user",
+      "email": opt.local.email,
+      "name": opt.local.email || "new user",
       "type": "to"
     }]
   }

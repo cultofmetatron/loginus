@@ -115,9 +115,7 @@ var mongoose = require('../../../deps/mongoose');
   UserSchema.static('findOrCreateFBUser', function(opt) {
     return Promise.try((function() {
       return this.find({
-        facebook: {
-          id: opt.facebook.id
-        }
+        "facebook.id": opt.facebook.id
       }).exec();
     }).bind(this))
     .bind(this)
@@ -128,6 +126,10 @@ var mongoose = require('../../../deps/mongoose');
         return users[0];
       }
     });
+  });
+
+  UserSchema.static('findOrCreateTwitterUser', function(opt) {
+  
   });
 
  

@@ -2,8 +2,21 @@ var express  = require('express');
 var app      = express();
 var passport = require('./middleware/passport');
 var bodyParser = require('body-parser');
+var cookieParser = require('cookie-parser');
+var session = require('express-session'); //required for twitter oauth
 
+app.use(cookieParser())
 app.use(bodyParser.json())
+
+app.use(session({
+  secret: 'keyboard cat',
+  cookie: { maxAge: new Date(Date.now() +     3600000), },
+  resave: true,
+  saveUninitialized: true
+}));
+
+
+passport.setSessions(app);
 
 app.get('/login', function(req, res, next) {
   console.log('grr')

@@ -11,6 +11,9 @@ var _ = require('lodash');
 var Facebook = require('facebook-node-sdk');
 var mailer = require('../mailer');
 
+
+
+
 //local strategy, returns a jwt
 passport.use(new LocalStrategy({
   usernameField: 'email'
@@ -38,7 +41,7 @@ passport.use(new LocalStrategy({
 passport.use(new FacebookStrategy({
     clientID: process.env.FB_APPID,
     clientSecret: process.env.FB_SECRET,
-    callbackURL: "http://localhost:"+ process.env.PORT + "/auth/facebook/callback",
+    callbackURL: process.env.HOSTADDRESS + "/auth/facebook/callback",
     enableProof: false
   },
   function(accessToken, refreshToken, profile, done) {
@@ -81,30 +84,64 @@ var retrieveFBProfile = function(accessToken) {
 
 //twitter strategy
 //http://127.0.0.1:5000/auth/twitter/callback
+console.log(process.env.HOSTADDRESS)
 passport.use(new TwitterStrategy({
     consumerKey: process.env.TWITTER_CONSUMER_KEY,
     consumerSecret: process.env.TWITTER_CONSUMER_SECRET,
-    callbackURL: "http://127.0.0.1:"+ process.env.PORT + "/auth/twitter/callback"
-  },
-  function(token, tokenSecret, profile, done) {
-    console.log('der profile in twitter strategy ', token, tokenSecret, profile)
-    done(null, false, {message: 'just foolin bros'})
+    callbackURL: process.env.HOSTADDRESS + "/auth/twitter/callback"
+  },  function(token, tokenSecret, profile, done) {
+    //console.log('der profile in twitter strategy ', token, tokenSecret, profile)
+    var user = {};
+    try {
+      var profile = JSON.parse(profile._raw)
+    } catch(parseError) {
+      return done(parseError);
+    }
+    user.twitter = _.extend({}, profile, {
+      session_data: {
+        token: token,
+        token_secret: tokenSecret
+      }
+    })
+    console.log('twitterStrategy', user)
+    User.findOrCreateTwitterUser(user)
+      .then(function(user) {
+        done(null, user);
+      })
+      .catch(done)
+
   }
 ));
 
 module.exports.authenticateTwitter = function(req, res, next) {
-  passport.authenticate('twitter')(req, res, function() {
-    console.log('twitter-auth', arguments);
-    
-  });
+  passport.authenticate('twitter')(req, res,next) 
 };
 
 module.exports.twitterCallback = function(req, res, next) {
-  passport.authenticate('twitter', function(err, profile) {
-    console.log('der profile: ', arguments);
-    res.render('twitter-login', {
-      jwt: 'yolo'
+  passport.authenticate('twitter', function(err, user) {
+    if (err) {
+      return next(err)
+    }
+    /*
+    Promise.try(function() {
+      return User.find({
+        'twitter.id':profile.id
+      }).exec();
     })
+    .then(function(users) {
+      if (users.length === 0) {
+        next(new Error('no suck user found'))
+      }
+    })
+    */
+    var token = jwt.sign({
+      _id: user._id
+    }, tokenSecret);
+
+  
+    res.render('twitter-login', {
+      jwt_token: token
+    });
   })(req, res, next);
 };
 
@@ -170,10 +207,11 @@ module.exports.authenticateLocal = function(req, res, next) {
 };
 
 passport.serializeUser(function(user, done) {
-  done(null, user._id);
+  //done(null, user._id);
 });
 
 passport.deserializeUser(function(id, done) {
+  /*
   User.find({
     _id: id
   }).exec()
@@ -182,9 +220,14 @@ passport.deserializeUser(function(id, done) {
   }, function(err) {
     done(err);
   });
+  */
 });
 
+module.exports.setSessions = function(app) {
+  app.use(passport.initialize());
+  app.use(passport.session());
 
+};
 
 
 

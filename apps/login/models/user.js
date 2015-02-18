@@ -27,7 +27,11 @@ var mongoose = require('../../../deps/mongoose');
       }
     },
     facebook: {
-      id: String,
+      id: {
+        type: String,
+        unique: true,
+        index: { sparse: true }
+      },
       session_data: {
         accessToken: String,
         refreshToken: String
@@ -35,8 +39,21 @@ var mongoose = require('../../../deps/mongoose');
       auth_data: Object
     },
     twitter: {
-      token: String,
-      tokenSecret: String
+      session_data: {
+        token: String,
+        token_secret: String
+      },
+      id: {
+        type: String,
+        unique: true,
+        index: { sparse: true }
+      },
+      name: String,
+      screen_name: String,
+      url: String,
+      status: Object,
+      profile_image_url: String,
+      profile_image_url_https: String
     },
     login_type: String,
     fb_login: {
@@ -129,7 +146,19 @@ var mongoose = require('../../../deps/mongoose');
   });
 
   UserSchema.static('findOrCreateTwitterUser', function(opt) {
-  
+    return Promise.try((function() {
+      return this.find({
+        "twitter.id": opt.twitter.id
+      }).exec();
+    }).bind(this))
+    .bind(this)
+    .then(function(users) {
+      if (users.length === 0) {
+        return this.create(opt)
+      } else {
+        return users[0];
+      }
+    });
   });
 
  

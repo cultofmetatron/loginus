@@ -2,14 +2,14 @@ var passport = require('passport');
 var LocalStrategy = require('passport-local');
 var FacebookStrategy = require('passport-facebook');
 var TwitterStrategy = require('passport-twitter').Strategy;
-
+var Promise = require('bluebird');
 var jwt = require('jsonwebtoken');
 var User = require('../models/user');
 var tokenSecret = process.env.TOKEN_SECRET;
 var _ = require('lodash');
 
 var Facebook = require('facebook-node-sdk');
-
+var mailer = require('../mailer');
 
 //local strategy, returns a jwt
 passport.use(new LocalStrategy({
@@ -114,11 +114,16 @@ module.exports.signupLocal = function(req, res, next) {
         _id: user._id
       }, tokenSecret);
 
-      res.status(200).json({
-        message: 'successfully logged in',
-        token: token
-      });
+      return Promise.all([
+        mailer.sendWelcomeEmail(user),
+        mailer.sendConfirmationEmail(user)
+      ]).then(function() {
+        res.status(200).json({
+          message: 'successfully logged in',
+          token: token
+        });
 
+      })
     })
     .catch(next);
   } else {

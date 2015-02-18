@@ -32,10 +32,36 @@ module.exports.confirm = function(req, res, next) {
   .catch(next);
 };
 
-module.exports.sendConfirmationMail = function(opt) {
+module.exports.sendConfirmationEmail = function(opt) {
   
   var message = {
     html: confirmationTemplate(opt),
+    subject: "please confirm your email!!",
+    "from_email": "peter@example.com",
+    "from_name": "Loginus",
+    "to": [{
+      "email": opt.email,
+      "name": opt.email || "new user",
+      "type": "to"
+    }]
+  }
+
+  var async = false;
+  var ip_pool = "Main Pool";
+
+  return new Promise(function(resolve, reject) {
+    mandrill_client.messages.send({
+      "message": message,
+      "async": async,
+      "ip_pool": ip_pool
+    }, resolve, reject)
+  });
+};
+
+module.exports.sendWelcomeEmail = function(opt) {
+  
+  var message = {
+    html: welcomeTemplate(opt),
     subject: "welcome to loginus app!!",
     "from_email": "peter@example.com",
     "from_name": "Loginus",
@@ -57,6 +83,7 @@ module.exports.sendConfirmationMail = function(opt) {
     }, resolve, reject)
   });
 };
+
 
 
 

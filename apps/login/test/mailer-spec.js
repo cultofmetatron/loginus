@@ -15,7 +15,7 @@ describe('mailer', function() {
       confirmation_token: "asfgasdkygfaks"
     })
     .then(function() {
-      done()
+      done();
     })
     .catch(function(err) {
       done(err);

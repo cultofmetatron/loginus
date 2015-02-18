@@ -7,15 +7,36 @@ var mongoose = require('../../../deps/mongoose');
 
   var Schema = mongoose.Schema;
   var UserSchema = new Schema({
-    fb_id: String,
-    fb_data: Object,
-    email: {
-      type: String,
-      unique: true,
-      index: { sparse: true }
+    local: {
+      email: {
+        type: String,
+        unique: true,
+        index: { sparse: true }
+      },
+      password_crypted: String,
+      password_salt: String,
+      confirmed: {
+        type: Boolean,
+        default: false
+      },
+      confirm_token: {
+        type: String,
+        unique: true,
+        index: { sparse: true },
+        default: function() { return uuid.v4(); }
+      }
     },
-    fb_auth_data: {
-      type: Object
+    facebook: {
+      id: String,
+      session_data: {
+        accessToken: String,
+        refreshToken: String
+      },
+      auth_data: Object
+    },
+    twitter: {
+      token: String,
+      tokenSecret: String
     },
     login_type: String,
     fb_login: {
@@ -26,24 +47,9 @@ var mongoose = require('../../../deps/mongoose');
       type: Boolean,
       default: false
     },
-    twitter_token: String,
-    twitter_tokenSecret: String,
-    twitter_profile: Object,
-    basic_login: {
+    local_login: {
       type: Boolean,
       default: false
-    },
-    password_crypted: String,
-    password_salt: String,
-    confirmed: {
-      type: Boolean,
-      default: false
-    },
-    confirm_token: {
-      type: String,
-      unique: true,
-      index: { sparse: true },
-      default: function() { return uuid.v4(); }
     },
     created_at: {
       type: Date,
@@ -69,22 +75,18 @@ var mongoose = require('../../../deps/mongoose');
         ]);
       })
       .spread(function(password_salt, password_crypted) {
-        var newUser = _.extend({}, params, {
-          password_crypted: password_crypted,
-          password_salt: password_salt
+        var newUser = _.extend({}, {
+          local: {
+            email: params.email,
+            password_crypted: password_crypted,
+            password_salt: password_salt
+          }
         });
         return this.create(newUser);
       })
       .catch(function(err) {
-        /*
-        if (err.message.match('E11000')) {
-          throw new Error('duplicate email')
-        } else {
-          throw err;
-        }
-        */
         throw err;
-      })
+      });
   });
 
   UserSchema.static('passwordMatch', function(opt) {
@@ -93,7 +95,7 @@ var mongoose = require('../../../deps/mongoose');
     return Promise
       .try((function() {
         return this.find({
-          email: email
+          "local.email": email
         }).exec();
       }).bind(this))
       .then(function(users) {
@@ -101,18 +103,21 @@ var mongoose = require('../../../deps/mongoose');
           return false;
         }
         var user = users[0];
-        return bcrypt.hashAsync(password, user.password_salt)
+        return bcrypt.hashAsync(password, user.local.password_salt)
           .then(function(hash) {
-            return (hash === user.password_crypted) ?
+            return (hash === user.local.password_crypted) ?
               _.omit(user, 'password_crypted', 'password_salt') : false
           });
       });
   });
 
+  //opt: id
   UserSchema.static('findOrCreateFBUser', function(opt) {
     return Promise.try((function() {
       return this.find({
-        fb_id: opt.fb_id,
+        facebook: {
+          id: opt.facebook.id
+        }
       }).exec();
     }).bind(this))
     .bind(this)
@@ -122,13 +127,10 @@ var mongoose = require('../../../deps/mongoose');
       } else {
         return users[0];
       }
-    })
+    });
   });
 
-  UserSchema.static('findOrCreateFacebookUser', function(options) {
-  
-  })
-
+ 
   module.exports = mongoose.model('User', UserSchema);
 
 

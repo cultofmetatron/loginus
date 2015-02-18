@@ -29,6 +29,7 @@ app.get('/email-exists', function(req, res, next) {
 
 
 app.use(function(err, req, res, next) {
+  console.log('login app error', err.stack)
   res.status(404).json({
     message: err.message
   });

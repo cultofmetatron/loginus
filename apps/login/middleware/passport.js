@@ -18,14 +18,18 @@ passport.use(new LocalStrategy({
   User.passwordMatch({
     email: email,
     password: password,
-    login_type: 'local'
   })
   .then(function(user) {
+    console.log('strategy user', user)
     if (user) {
       done(null, user);
     } else {
       done(null, user, {message: 'User not found'});
     }
+  })
+  .catch(function(err) {
+    console.log('cosmonot', err);
+    throw err
   })
   .catch(done);
 }));
@@ -39,14 +43,14 @@ passport.use(new FacebookStrategy({
   },
   function(accessToken, refreshToken, profile, done) {
     console.log('configure strategy', profile);
-    var user = {
-      login_type: 'facebook',
-      fb_id: profile.id,
-      fb_data: {
+    user = {};
+    user.facebook = {
+      id: profile.id,
+      session_data: {
         accessToken: accessToken,
         refreshToken: refreshToken
       },
-      fb_auth_data: profile
+      auth_data: profile
     };
     console.log('inserting user, ', user)
     User.findOrCreateFBUser(user)
@@ -107,7 +111,7 @@ module.exports.twitterCallback = function(req, res, next) {
 
 module.exports.signupLocal = function(req, res, next) {
   if (req.body.email && req.body.password) {
-    User.createUser(_.extend({}, req.body, {login_type: 'local' }))
+    User.createUser(_.extend({}, req.body))
     .then(function(user) {
       console.log('a user', user, jwt)
       var token = jwt.sign({

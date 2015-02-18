@@ -18,9 +18,13 @@ module.exports.confirm = function(req, res, next) {
   console.log('token', confirm_token);
   Promise.try(function() {
     return User.update({
-      confirm_token: confirm_token
+      local: {
+        confirm_token: confirm_token
+      }
     }, {
-      confirmed: true
+      local: {
+        confirmed: true
+      }
     }, { multi: true })
     .exec();
   })
@@ -33,7 +37,7 @@ module.exports.confirm = function(req, res, next) {
 };
 
 module.exports.sendConfirmationEmail = function(opt) {
-  
+  console.log('mailer opt: ', opt)
   var message = {
     html: confirmationTemplate(opt),
     subject: "please confirm your email!!",

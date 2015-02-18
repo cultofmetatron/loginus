@@ -2,13 +2,8 @@ var Promise = require('bluebird');
 var bcrypt = Promise.promisifyAll(require('bcrypt'));
 var _ = require('lodash');
 
-
-
-
 module.exports = function(mongoose) {
-
   var Schema = mongoose.Schema;
-
   var UserSchema = new Schema({
     id: {
       type: String,
@@ -103,7 +98,7 @@ module.exports = function(mongoose) {
             return (hash === user.password_crypted) ?
               _.omit(user, 'password_crypted', 'password_salt') : false
           });
-      })
+      });
   });
 
   UserSchema.static('findOrCreateFBUser', function(opt) {

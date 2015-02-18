@@ -1,4 +1,43 @@
 
+(function() {
+  //lifted from http://www.w3schools.com/js/js_cookies.asp
+  function getCookie(cname) {
+      var name = cname + "=";
+      var ca = document.cookie.split(';');
+      for(var i=0; i<ca.length; i++) {
+          var c = ca[i];
+          while (c.charAt(0)==' ') c = c.substring(1);
+          if (c.indexOf(name) == 0) return c.substring(name.length,c.length);
+      }
+      return "";
+  }
+
+  //returns with the jwt token, null otherwise
+  window.loggedIn = function() {
+    return (getCookie('jwt').length > 0) ? getCookie('jwt') : false;
+  };
+
+  var checkStatus = setInterval((function(status) {
+    return function() {
+      var jwt = loggedIn();
+      if (jwt && (jwt !== status.loggedIn)) {
+        console.log('oh noes!!', jwt, status.loggedIn)
+        status.loggedIn = jwt;
+        $(window).trigger('loggedIn', { data: jwt });
+      } else {
+        //edge cases I haven't thought of; maybe logout?
+        if (!jwt) {
+          status.loggedIn = false;
+          $(window).trigger('loggedOut');
+        } else {
+          
+        }
+      }
+    }
+  })({loggedIn: false}), 500);
+
+}).call(this);
+
 angular.module('app', ['ui.bootstrap', 'facebook'])
 .controller('TabsAccounts', function ($scope, $window, $http) {
 

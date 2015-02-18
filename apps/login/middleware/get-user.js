@@ -1,7 +1,6 @@
 var jwt = require('express-jwt');
 var jwt_secret = process.env.TOKEN_SECRET;
-var mongoose = require('../../../deps/mongoose');
-var User = require('../modules/user.js')(mongoose);
+var User = require('../modules/user.js');
 var Promise = require('bluebird');
 
 //authorize pipeline gets the user model for that user

@@ -1,3 +1,9 @@
+/*  
+ *  I did not write this, I lifted this from angular-fb
+ */
+
+
+
 (function(window, angular, undefined) {
   'use strict';
 

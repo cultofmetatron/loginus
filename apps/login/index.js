@@ -15,6 +15,9 @@ app.get('/login', function(req, res, next) {
 app.post('/login', passport.authenticateLocal);
 app.post('/signup', passport.signupLocal);
 
+var mailer = require('./mailer');
+
+app.get('/auth/mailer/confirm/:confirm_token', mailer.confirm)
 app.get('/auth/facebook', passport.fbAuthenticate);
 app.get('/auth/facebook/callback', passport.facebookCallback);
 app.get('/auth/twitter', passport.authenticateTwitter);

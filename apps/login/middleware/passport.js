@@ -3,9 +3,8 @@ var LocalStrategy = require('passport-local');
 var FacebookStrategy = require('passport-facebook');
 var TwitterStrategy = require('passport-twitter').Strategy;
 
-var mongoose = require('../../../deps/mongoose');
 var jwt = require('jsonwebtoken');
-var User = require('../models/user')(mongoose);
+var User = require('../models/user');
 var tokenSecret = process.env.TOKEN_SECRET;
 var _ = require('lodash');
 
@@ -39,7 +38,7 @@ passport.use(new FacebookStrategy({
     enableProof: false
   },
   function(accessToken, refreshToken, profile, done) {
-    console.log(profile);
+    console.log('configure strategy', profile);
     var user = {
       login_type: 'facebook',
       fb_id: profile.id,
@@ -49,6 +48,7 @@ passport.use(new FacebookStrategy({
       },
       fb_auth_data: profile
     };
+    console.log('inserting user, ', user)
     User.findOrCreateFBUser(user)
       .then(function(user) {
         done(null, user);
@@ -121,18 +121,6 @@ module.exports.signupLocal = function(req, res, next) {
 
     })
     .catch(next);
-  } if ((req.body.type === 'fb' && req.body.accessToken && req.body.userID)) {
-    console.log('facebook login!')
-    retrieveFBProfile(req.body.accessToken)
-      .then(function(data) {
-        console.log('der data', data);
-        res.send({
-          message: profile,
-          data: data
-        })
-      })
-      .catch(err);
-  
   } else {
     next(new Error('email and or password not provided'));
   }

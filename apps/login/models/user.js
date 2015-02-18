@@ -1,19 +1,18 @@
 var Promise = require('bluebird');
 var bcrypt = Promise.promisifyAll(require('bcrypt'));
 var _ = require('lodash');
+var uuid = require('node-uuid');
+var mongoose = require('../../../deps/mongoose');
 
-module.exports = function(mongoose) {
+
   var Schema = mongoose.Schema;
   var UserSchema = new Schema({
-    id: {
-      type: String,
-      unique: true
-    },
     fb_id: String,
     fb_data: Object,
     email: {
       type: String,
       unique: true,
+      index: { sparse: true }
     },
     fb_auth_data: {
       type: Object
@@ -39,6 +38,12 @@ module.exports = function(mongoose) {
     confirmed: {
       type: Boolean,
       default: false
+    },
+    confirm_token: {
+      type: String,
+      unique: true,
+      index: { sparse: true },
+      default: function() { return uuid.v4(); }
     },
     created_at: {
       type: Date,
@@ -71,11 +76,14 @@ module.exports = function(mongoose) {
         return this.create(newUser);
       })
       .catch(function(err) {
+        /*
         if (err.message.match('E11000')) {
           throw new Error('duplicate email')
         } else {
           throw err;
         }
+        */
+        throw err;
       })
   });
 
@@ -121,7 +129,6 @@ module.exports = function(mongoose) {
   
   })
 
-  return mongoose.model('User', UserSchema);
-};
+  module.exports = mongoose.model('User', UserSchema);
 
 

@@ -21,7 +21,7 @@
     return function() {
       var jwt = loggedIn();
       if (jwt && (jwt !== status.loggedIn)) {
-        console.log('oh noes!!', jwt, status.loggedIn)
+        console.log('loggedIn', jwt, status.loggedIn)
         status.loggedIn = jwt;
         $(window).trigger('loggedIn', { data: jwt });
       } else {
@@ -38,8 +38,21 @@
 
 }).call(this);
 
+$('window').on('loggedIn', function() {
+  module.run(function($http) {
+    var jwt = loggenIn();
+    $http.defaults.headers.common.Authorization = 'Bearer ' + jwt
+  });
+});
+
 angular.module('app', ['ui.bootstrap', 'facebook'])
 .controller('TabsAccounts', function ($scope, $window, $http) {
+
+  $scope.isLoggedIn = loggedIn();
+
+  setInterval(function() {
+    $scope.isLoggedIn = loggedIn();
+  }, 500);
 
   $scope.postLogin = function(data) {
     console.log('data', data)

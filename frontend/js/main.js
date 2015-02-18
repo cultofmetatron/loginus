@@ -1,68 +1,94 @@
 
-(function() {
-  //lifted from http://www.w3schools.com/js/js_cookies.asp
-  function getCookie(cname) {
-      var name = cname + "=";
-      var ca = document.cookie.split(';');
-      for(var i=0; i<ca.length; i++) {
-          var c = ca[i];
-          while (c.charAt(0)==' ') c = c.substring(1);
-          if (c.indexOf(name) == 0) return c.substring(name.length,c.length);
-      }
-      return "";
-  }
+angular.module('app',[
+  'ui.bootstrap',
+  'facebook',
+  'angular-jwt',
+  'ngCookies'
+])
+.config(function($httpProvider, FacebookProvider, jwtInterceptorProvider) {
+  // Set your appId through the setAppId method or
+  // use the shortcut in the initialize method directly.
+  FacebookProvider.init('1549928668626444');
 
-  //returns with the jwt token, null otherwise
-  window.loggedIn = function() {
-    return (getCookie('jwt').length > 0) ? getCookie('jwt') : false;
-  };
+   //look for the jwt
+  jwtInterceptorProvider.tokenGetter = ['$cookieStore', function($cookieStore) {
+    return $cookieStore.get('jwt');
+  }];
 
-}).call(this);
-
-
-angular.module('app', ['ui.bootstrap', 'facebook'])
-.config(function(FacebookProvider) {
-   // Set your appId through the setAppId method or
-   // use the shortcut in the initialize method directly.
-   FacebookProvider.init('1549928668626444');
 })
 .run(function($http) {
 })
-.controller('TabsAccounts', function ($scope, $window, $http, $interval) {
+.factory('Auth', function($cookies, $cookieStore, $http) {
+  return {
+    signup: function() {
+      return $http.post('/signup', data)
+      .success(function(data) {
+        $cookieStore.put('jwt', data.token)
+        return data;
+      })
+      .error(function(err) {
+        console.log('signup error', err);
+        throw err;
+      });
+    },
+    login: function() {
+      console.log('data', data)
+      return $http.post('/login', data)
+        .success(function(data) {
+          //$window.JWT_TOKEN = data.token;
+          $cookieStore.put('jwt', data.token);
+          return data
+        })
+        .error(function(err) {
+          console.log('login error', err)
+          throw err;
+        });
 
-  $scope.isLoggedIn = loggedIn();
+    },
+    isAuthenticated: function() {
+      //debugger
+      return !!$cookies.jwt;
+    }
+  }
+})
+.controller('TabsAccounts', function ($scope, $window, $http, $interval, Auth) {
+
+  $scope.isLoggedIn = Auth.isAuthenticated();
 
   $interval(function() {
-    $scope.isLoggedIn = loggedIn();
+    $scope.isLoggedIn = Auth.isAuthenticated();
   }, 500);
 
 
 
-  $scope.postLogin = function(data) {
-    console.log('data', data)
-    return $http.post('/login', data)
-      .success(function(data) {
-        console.log('success', data);
-        $window.JWT_TOKEN = data.token;
-        document.cookie = "jwt="+ data.token + ";path=/"
-      })
-      .error(function(err) {
-        console.log('login error', err)
-      });
+  $scope.postLogin = function(user) {
+    Auth.login({
+      email: user.email,
+      password: user.password
+    })
+    .then(function(data) {
+      console.log(data);
+      return data;
+    })
+    .catch(function(err) { 
+      console.log(err);
+      
+    });
   };
 
   $scope.postSignup = function(data) {
-    return $http.post('/signup', data)
-      .success(function(data) {
-        console.log('success', data)
-        $window.JWT_TOKEN = data.token;
-        document.cookie = "jwt="+ data.token + ";path=/"
-
-      })
-      .error(function(err) {
-        console.log('signup error', err)
-      });
-
+    Auth.signup({
+      email: data.email,
+      password: data.password
+    })
+    .then(function(data) {
+      console.log(data);
+      return data;
+    })
+    .catch(function(err) {
+      console.log(err);
+      
+    });
   };
 
   $scope.loginHandler = function(login) {

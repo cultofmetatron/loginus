@@ -33,7 +33,7 @@ var mailer = require('./mailer');
 app.get('/auth/mailer/confirm/:confirm_token', mailer.confirm)
 app.post('/auth/mailer/reset/', passport.createResetCode);
 app.get('/auth/mailer/reset/:reset_code', passport.changePassword);
-
+app.post('/auth/mailer/reset', passport.resetPassword)
 
 
 app.get('/auth/facebook', passport.fbAuthenticate);

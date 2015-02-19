@@ -232,7 +232,23 @@ module.exports.changePassword = function(req, res, next) {
 };
 
 module.exports.resetPassword = function(req, res, next) {
-
+  //find the user with that reset code and modify it
+  var password = req.body.password;
+  var reset_code = req.body.reset_code;
+  User.changePassword({
+    password: password,
+    reset_code: reset_code
+  })
+  .then(function(records) {
+    if (records.length === 1) {
+      res.send({
+        message: 'password updated'
+      });
+    } else {
+      next(new Error('invalid reset code'));
+    }
+  })
+  .catch(next);
 
 };
 

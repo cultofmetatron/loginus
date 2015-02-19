@@ -27,8 +27,12 @@ angular.module('app',[
   };
 })
 .controller('ResetCtrl', function($scope, $window, $http, Reset) {
+  $scope.ruben = "I am ruben";
+  $scope.reset = $scope.reset || {}
   $scope.submitted = false;
+  $scope.reset.reset_code = $('.reset_code').text();
   $scope.submitReset = function(password, reset_code) {
+    
     return Reset.reset(password, reset_code)
       .then(function(res) {
         alert('success')

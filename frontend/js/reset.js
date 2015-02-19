@@ -17,12 +17,29 @@ angular.module('app',[
 
 })
 .factory('Reset', function($http, $q) {
-
-
+  return {
+    reset: function(password, reset_code) {
+      return $http.post('/auth/mailer/resetpassword', {
+          password: password,
+          reset_code: reset_code
+        });
+    }
+  };
 })
-.controller('ResetView', function($scope, $window, $http) {
+.controller('ResetCtrl', function($scope, $window, $http, Reset) {
+  $scope.submitted = false;
+  $scope.submitReset = function(password, reset_code) {
+    return Reset.reset(password, reset_code)
+      .then(function(res) {
+        alert('success')
+        return res
+      })
+      .catch(function(res) {
+        alert('epic fail!! :(');
+        throw res;
+      });
 
-
+  }
 
 });
 

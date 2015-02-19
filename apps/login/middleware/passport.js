@@ -232,6 +232,9 @@ module.exports.changePassword = function(req, res, next) {
 };
 
 module.exports.resetPassword = function(req, res, next) {
+  console.log('gettign to here')
+  return res.status(200).send({message: 'hello'});
+
   //find the user with that reset code and modify it
   var password = req.body.password;
   var reset_code = req.body.reset_code;

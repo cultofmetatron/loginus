@@ -12,8 +12,10 @@ var welcomeTemplate = _.template(fs.readFileSync(path.join(__dirname, 'templates
 var resetTemplate = _.template(fs.readFileSync(path.join(__dirname, 'templates', 'reset.tpl'), 'utf8'));
 
 var injectables = {
-  host: process.env.HOSTADDRESS
-};
+  env: {
+    host: process.env.HOSTADDRESS
+  }
+}
 
 //post a confirm token. if its matches, then set the users confirmed 
 //status to true
@@ -91,6 +93,7 @@ module.exports.sendWelcomeEmail = function(opt) {
 
 module.exports.sendResetEmail = function(opt) {
   opt = _.extend(opt, injectables)
+  console.log('opt', opt)
 
   var message = {
     html: resetTemplate(opt),

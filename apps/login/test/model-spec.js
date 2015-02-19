@@ -60,6 +60,32 @@ describe('User', function() {
       .catch(done)
   });
 
+  var reset_code;
+
+  it("should create a reset code", function(done) {
+    return User.createResetCode({
+        email: 'foobar@foobar.com'
+      })
+      .then(function(user) {
+        console.log('resset ', user)
+        reset_code = user.local.reset_code;
+        done()
+      })
+      .catch(done)
+  });
+
+  it("should chnage the password", function(done) {
+    return User.changePassword({
+      reset_code: reset_code,
+      password: "hushkitty"
+    })
+    .then(function() {
+      
+      done();
+    })
+    .catch(done)
+  });
+
 
   after(function(done) {
     //delete the user

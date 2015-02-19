@@ -80,6 +80,20 @@ var mongoose = require('../../../deps/mongoose');
   });
 
 
+  var generatePair = function(password) {
+    return bcrypt.genSaltAsync(10)
+      .then(function(salt) {
+        return Promise.all([salt, bcrypt.hashAsync(password, salt)]);
+      })
+      .spread(function(password_salt, password_crypted) {
+        return {
+          password_salt: password_salt,
+          password_crypted: password_crypted
+        };
+      });
+  };
+
+
   //create a user with the options, returns a promise
    UserSchema.static('createUser', function(opt) {
     console.log('der user ', opt)
@@ -111,21 +125,43 @@ var mongoose = require('../../../deps/mongoose');
       });
   });
 
+  //generate a reset code for the model
   UserSchema.static('createResetCode', function(opt) {
     var email = opt.email;
+    var resetCode = uuid.v4();
     return Promise
       .try((function() {
         return this.update({
           "local.email": email
         }, {
-          "local.reset_code": uuid.v4()
+          "local.reset_code": resetCode
         }).exec();
       }).bind(this))
       .bind(this)
       .then(function(users) {
-        console.log('users')
-      
+        return this.find({
+          "local.reset_code": resetCode
+        }).exec();
+      })
+      .then(function(users) {
+        return users[0];
       });
+  });
+
+
+  
+  //given a reset code, change the password
+  UserSchema.static('changePassword', function(opt) {
+    return generatePair(opt.password)
+      .then((function(pair) {
+        return this.update({
+          "local.reset_code": opt.reset_code
+        }, {
+          "local.reset_code": null,
+          "local.password_crypted": pair.password_crypted,
+          "local.password_salt": pair.password_salt
+        }).exec();
+      }).bind(this));
   });
 
   UserSchema.static('passwordMatch', function(opt) {

@@ -206,6 +206,36 @@ module.exports.authenticateLocal = function(req, res, next) {
   })(req, res, next);
 };
 
+module.exports.createResetCode = function(req, res, next) {
+  User.createResetCode({ email: req.body.email })
+    .then(function(user) {
+      return mailer.sendResetEmail(user);
+    })
+    .then(function() {
+      res.send({
+        message: 'reset code sent'
+      })
+    })
+    .catch(next);
+}
+
+//GET - renders a view
+module.exports.changePassword = function(req, res, next) {
+  var resetCode = req.params.reset_code;
+  if (_.isUndefined(resetCode)) {
+    return next(new Error('no reset code specified'))
+  };
+
+  res.render('password-reset', {
+    reset_code: resetCode
+  });
+};
+
+module.exports.resetPassword = function(req, res, next) {
+
+
+};
+
 passport.serializeUser(function(user, done) {
   //done(null, user._id);
 });

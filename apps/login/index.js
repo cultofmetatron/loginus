@@ -31,6 +31,11 @@ app.post('/signup', passport.signupLocal);
 var mailer = require('./mailer');
 
 app.get('/auth/mailer/confirm/:confirm_token', mailer.confirm)
+app.post('/auth/mailer/reset/', passport.createResetCode);
+app.get('/auth/mailer/reset/:reset_code', passport.changePassword);
+
+
+
 app.get('/auth/facebook', passport.fbAuthenticate);
 app.get('/auth/facebook/callback', passport.facebookCallback);
 app.get('/auth/twitter', passport.authenticateTwitter);

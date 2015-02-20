@@ -19,7 +19,7 @@ angular.module('app',[
 .factory('Reset', function($http, $q) {
   return {
     reset: function(password, reset_code) {
-      return $http.post('/auth/mailer/resetpassword', {
+      return $http.post('/resetpassword', {
           password: password,
           reset_code: reset_code
         });
@@ -32,14 +32,13 @@ angular.module('app',[
   $scope.submitted = false;
   $scope.reset.reset_code = $('.reset_code').text();
   $scope.submitReset = function(password, reset_code) {
-    
     return Reset.reset(password, reset_code)
       .then(function(res) {
-        alert('success')
+        $scope.submitted = true;
         return res
       })
       .catch(function(res) {
-        alert('epic fail!! :(');
+        alert(res.data.message);
         throw res;
       });
 

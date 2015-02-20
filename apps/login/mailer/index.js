@@ -15,7 +15,7 @@ var injectables = {
   env: {
     host: process.env.HOSTADDRESS
   }
-}
+};
 
 //post a confirm token. if its matches, then set the users confirmed 
 //status to true

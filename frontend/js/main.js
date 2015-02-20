@@ -50,7 +50,9 @@ angular.module('app',[
       return !!$cookies.jwt;
     },
     reset: function(email) {
-    
+      return $http.post('/reset', {
+        email: email
+      })
     }
   }
 })
@@ -110,13 +112,16 @@ angular.module('app',[
     }
   };
 
+  $scope.resetted = false;
+
   $scope.resetHandler = function(email) {
     return Auth.reset(email)
       .then(function() {
-      
+        console.log('success');
+        $scope.resetted = true;
       })
-      .catch(function() {
-      
+      .catch(function(err) {
+        console.log('reset err ', err)
       })
   
   };

@@ -32,12 +32,13 @@ block content
               input.btn.btn-default(type="submit")
         tab(heading="Reset Password")
           br
-          form#reset(ng-submit="resetHandler(reset.email)")
+          form#reset(ng-submit="resetHandler(reset.email)", ng-show="!resetted")
             .form-group
               label.control-label What email did you use?
               input(type="email", email-available-validator="" required="", ng-model="reset.email", ng-model-options="{ updateOn: 'default blur', debounce: {'default': 500, 'blur': 0} }"  , name="email" class="form-control")
             .form-group
               input.btn.btn-default(type="submit")
+          h1(ng-show="resetted") You will be emailed a reset code in a few moments.
         tab(heading="Social Logins")
           div(ng-controller="OauthAccount")
             .row

@@ -26,7 +26,7 @@ angular.module('app',[
     }
   };
 })
-.controller('ResetCtrl', function($scope, $window, $http, Reset) {
+.controller('ResetCtrl', function($scope, Reset) {
   $scope.ruben = "I am ruben";
   $scope.reset = $scope.reset || {}
   $scope.submitted = false;
